@@ -48,7 +48,13 @@ class Settings:
     TABLE_NAME_DESTINO: str = os.getenv("TABLE_NAME_DESTINO", "tbl_dash_calls_etl")
     BATCH_SIZE: int = int(os.getenv("BATCH_SIZE", "1000"))
 
-    LOG_DIR: str = os.getenv("LOG_DIR", str(Path(__file__).parent.parent / "logs"))
+    _log_dir_value = os.getenv("LOG_DIR", "logs").strip()
+    _log_dir_path = Path(_log_dir_value)
+    if not _log_dir_path.is_absolute():
+        _log_dir_path = (BASE_DIR / _log_dir_path).resolve()
+    else:
+        _log_dir_path = _log_dir_path.resolve()
+    LOG_DIR: str = str(_log_dir_path)
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 
 
