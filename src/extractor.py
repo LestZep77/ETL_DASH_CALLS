@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pymysql
 from pymysql.constants import FIELD_TYPE
 from config.settings import settings
@@ -136,6 +138,14 @@ QUERY_MYSQL = """
 """
 
 
+def _format_window_value(value):
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    if value is None:
+        return None
+    return str(value)
+
+
 def get_column_metadata(cursor):
     cols = []
     for desc in cursor.description:
@@ -180,7 +190,17 @@ def _mysql_ssl():
     return None
 
 
-def extract():
+def extract(start_date=None, end_date=None):
+    start_date = _format_window_value(start_date or settings.EXTRACT_START_DATE)
+    end_date = _format_window_value(end_date or settings.EXTRACT_END_DATE)
+
+    if not start_date or not end_date:
+        raise ValueError(
+            "No se definio una ventana de extraccion valida. "
+            "Define EXTRACT_START_DATE y EXTRACT_END_DATE o deja que el pipeline "
+            "resuelva automaticamente la ventana."
+        )
+
     ssl_params = _mysql_ssl() if settings.MYSQL_SSL_ENABLED else None
     conn = pymysql.connect(
         host=settings.MYSQL_HOST,
@@ -195,7 +215,7 @@ def extract():
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute(
                 QUERY_MYSQL,
-                (settings.EXTRACT_START_DATE, settings.EXTRACT_END_DATE),
+                (start_date, end_date),
             )
             rows = cursor.fetchall()
             metadata = get_column_metadata(cursor)

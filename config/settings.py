@@ -41,12 +41,9 @@ class Settings:
     MYSQL_SSL_CERT: str = os.getenv("MYSQL_SSL_CERT", "")
     MYSQL_SSL_KEY: str = os.getenv("MYSQL_SSL_KEY", "")
 
-    EXTRACT_START_DATE: str = os.getenv(
-        "EXTRACT_START_DATE", "2026-05-09 00:00:00"
-    )
-    EXTRACT_END_DATE: str = os.getenv(
-        "EXTRACT_END_DATE", "2026-05-12 00:00:00"
-    )
+    EXTRACT_START_DATE: str = os.getenv("EXTRACT_START_DATE", "").strip()
+    EXTRACT_END_DATE: str = os.getenv("EXTRACT_END_DATE", "").strip()
+    EXTRACT_OVERLAP_MINUTES: int = int(os.getenv("EXTRACT_OVERLAP_MINUTES", "60"))
 
     TABLE_NAME_DESTINO: str = os.getenv("TABLE_NAME_DESTINO", "tbl_dash_calls_etl")
     BATCH_SIZE: int = int(os.getenv("BATCH_SIZE", "1000"))

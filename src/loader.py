@@ -18,6 +18,22 @@ def _get_connection():
     return odbc.connect(_connection_string(), autocommit=False)
 
 
+def get_last_loaded_call_date():
+    schema = settings.SQLSERVER_SCHEMA
+    table_full = f"[{schema}].[{settings.TABLE_NAME_DESTINO}]"
+
+    conn = _get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT MAX([CALL_DATE]) FROM {table_full}")
+        row = cursor.fetchone()
+        if not row:
+            return None
+        return row[0]
+    finally:
+        conn.close()
+
+
 def load(data):
     if not data:
         return 0
