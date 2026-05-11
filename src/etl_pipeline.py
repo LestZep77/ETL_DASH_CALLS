@@ -4,7 +4,7 @@ import logging
 from config.settings import settings
 from src.extractor import extract
 from src.transformer import transform
-from src.loader import create_table_if_not_exists, load
+from src.loader import load
 
 logger = logging.getLogger("etl_pipeline")
 
@@ -14,6 +14,8 @@ def run():
     logger.info("E T L   I N I C I A D O")
     logger.info("Origen:  MySQL/MariaDB  →  %s:%s/%s",
                  settings.MYSQL_HOST, settings.MYSQL_PORT, settings.MYSQL_DATABASE)
+    logger.info("Ventana extracción: %s → %s",
+                settings.EXTRACT_START_DATE, settings.EXTRACT_END_DATE)
     logger.info("Destino: SQL Server     →  %s/%s [%s]",
                  settings.SQLSERVER_HOST, settings.SQLSERVER_DATABASE, settings.SQLSERVER_SCHEMA)
 
@@ -39,18 +41,6 @@ def run():
     logger.info("[TRANSFORM] %d registros enriquecidos", len(enriched))
 
     logger.info("[LOAD] Conectando a SQL Server...")
-    try:
-        created = create_table_if_not_exists(metadata)
-        if created:
-            logger.info("[LOAD] Tabla '%s' creada exitosamente",
-                        settings.TABLE_NAME_DESTINO)
-        else:
-            logger.info("[LOAD] Tabla '%s' ya existe, omitiendo creación",
-                        settings.TABLE_NAME_DESTINO)
-    except Exception as e:
-        logger.error("[LOAD] FALLO al crear/verificar tabla: %s", e)
-        raise
-
     logger.info("[LOAD] Insertando datos (control incremental por hash)...")
     try:
         inserted = load(enriched)

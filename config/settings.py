@@ -2,7 +2,17 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent / ".env")
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_CANDIDATES = [
+    Path(__file__).resolve().parent / ".env",
+    BASE_DIR / ".env",
+    BASE_DIR / ".env.local",
+]
+
+for env_path in ENV_CANDIDATES:
+    if env_path.exists():
+        load_dotenv(env_path)
+        break
 
 
 class Settings:
@@ -13,7 +23,6 @@ class Settings:
     MYSQL_DATABASE: str = os.getenv("MYSQL_DATABASE", "")
 
     SQLSERVER_HOST: str = os.getenv("SQLSERVER_HOST", "")
-    SQLSERVER_PORT: int = int(os.getenv("SQLSERVER_PORT", "1433"))
     SQLSERVER_USER: str = os.getenv("SQLSERVER_USER", "")
     SQLSERVER_PASSWORD: str = os.getenv("SQLSERVER_PASSWORD", "")
     SQLSERVER_DATABASE: str = os.getenv("SQLSERVER_DATABASE", "")
@@ -31,6 +40,13 @@ class Settings:
     MYSQL_SSL_CA: str = os.getenv("MYSQL_SSL_CA", "")
     MYSQL_SSL_CERT: str = os.getenv("MYSQL_SSL_CERT", "")
     MYSQL_SSL_KEY: str = os.getenv("MYSQL_SSL_KEY", "")
+
+    EXTRACT_START_DATE: str = os.getenv(
+        "EXTRACT_START_DATE", "2026-05-09 00:00:00"
+    )
+    EXTRACT_END_DATE: str = os.getenv(
+        "EXTRACT_END_DATE", "2026-05-12 00:00:00"
+    )
 
     TABLE_NAME_DESTINO: str = os.getenv("TABLE_NAME_DESTINO", "tbl_dash_calls_etl")
     BATCH_SIZE: int = int(os.getenv("BATCH_SIZE", "1000"))

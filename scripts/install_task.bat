@@ -5,7 +5,8 @@ echo  Instalando Tarea Programada - ETL DASH CALLS
 echo ============================================
 echo.
 
-set "PROJECT_DIR=C:\Users\Lester\Documents\PROYECTOS_ETL\ETL_DASH_CALLS"
+set "SCRIPT_DIR=%~dp0"
+for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_DIR=%%~fI"
 
 REM Auto-detectar ruta del python del entorno virtual
 set "PYTHON_PATH=%PROJECT_DIR%\.venv\Scripts\python.exe"

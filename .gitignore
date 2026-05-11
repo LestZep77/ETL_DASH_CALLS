@@ -1,11 +1,14 @@
 # Credenciales
 config/.env
+.env
+.env.local
 
 # Logs
 logs/
 *.log
 
 # Python cache
+.venv/
 __pycache__/
 *.py[cod]
 *$py.class
